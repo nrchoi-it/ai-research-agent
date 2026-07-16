@@ -16,13 +16,21 @@ class LLM:
 
     def ask(self, prompt: str):
 
-        response = self.client.models.generate_content(
-            model="gemini-flash-latest",
-            contents=f"""{SYSTEM_PROMPT}
+        interaction = self.client.interactions.create(
+            model="gemini-3.5-flash",
+            input=f"""{SYSTEM_PROMPT}
 
-        사용자 질문:
-        {prompt}
-        """
+User question:
+{prompt}
+""",
+            tools=[
+                {
+                    "type": "google_search"
+                }
+            ]
         )
 
-        return response.text
+        return {
+            "answer": interaction.output_text,
+            "interaction": interaction
+        }
